@@ -1,53 +1,122 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="uk">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Я - волонтер</title>
-    <link rel="stylesheet" href="styles.css" />
+    <title>Я - волонтер: Еко-панорама</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <header>
-        <h1>Навігація</h1>
+
+<header>
+    <div class="header-container">
+        <h1>Я - волонтер:</h1>
         <nav>
             <ul>
-                <li><a href ="#">Home</a></li>
-                <li><a href ="#">Доступні ініціативи</a></li>
-                <li><a href ="#">Мої ініціативи</a></li>
-                <li><a href ="#">Про нас</a></li>
+                <li><a href="#mision">Про нас</a></li>
+                <li><a href="#nature">Природа</a></li>
+                <li><a href="#animals">Тварини</a></li>
+                <li><a href="#social">Місто</a></li>
+                <li><a href="#my">Мої ініціативи</a></li>
             </ul>
         </nav>
-    </header>
-    <main>
-        <section id="nature">
-            <h2>Доступні еко-ініціативи</h2>
-            <div class="project-list">
-                <article class="project-card">Висадка дерев</article>
-                <article class="project-card">Очищення річки</article>
-                <article class="project-card">Парк без сміття</article>
-            </div>
-        </section>
+    </div>
+</header>
 
-        <section id="achievements">
-            <h2>Мої досягнення</h2>
-            <div class="stats">
-                <p>Годин волонтерства: 48</p>
-                <p>Проєктів завершено: 5</p>
-            </div>
-        </section>
+<main>
+    <section id="mision">
+        <div class="glass-box">
+            <h2>Наша місія</h2>
+            <h3>Твої руки — це сила.</h3>
+            <p>Ми збираємо ресурси та енергію людей, щоб перетворити їх на щит для нашої природи та громади. Кожен крок від лісу до міста — це твоя можливість допомогти.</p>
+        </div>
+    </section>
 
-        <section id="rating">
-            <h2>Рейтинг волонтерів</h2>
-            <table class="rating-table">
-                <tr><th>Місце</th><th>Ім'я</th><th>Бали</th></tr>
-                <tr><td>1</td><td>Олена</td><td>1200</td></tr>
-                <tr><td>2</td><td>Іван</td><td>1150</td></tr>
-            </table>
-        </section>
-    </main>
+    <section id="nature" class="grid-section">
+        <div class="section-intro">
+            <h2>Природа</h2>
+            <p>Допоможи лісу дихати. Висадка дерев та очищення водойм у віддалених зонах.</p>
+        </div>
+        <div class="project-list">
+            <article class="project-card">
+                <h3>Висадка дубів</h3>
+                <div class="card-meta"><span>📅 25.10</span><span>📍 Дубляни, дублянський парк</span></div>
+                <button class="join-btn">Долучитися</button>
+            </article>
+            <article class="project-card">
+                <h3>Чисті джерела</h3>
+                <div class="card-meta"><span>📅 28.10</span><span>📍 о.Задорожнє </span></div>
+                <button class="join-btn">Долучитися</button>
+            </article>
+        </div>
+    </section>
+
+    <section id="animals" class="grid-section">
+        <div class="section-intro">
+            <h2>Тварини</h2>
+            <p>Турбота про тих, хто не може попросити про допомогу. Проєкти в межах міських парків.</p>
+        </div>
+        <div class="project-list">
+            <article class="project-card">
+                <h3>Зимові годівнички</h3>
+                <div class="card-meta"><span>📅 05.11</span><span>📍 парк Культури </span></div>
+                <p> Дуже потрібні люди з, бажано зоологів. Багато тварин прибуло зі сходу. </p>
+                <button class="join-btn">Долучитися</button>
+            </article>
+            <article class="project-card">
+                <h3>Патронаж притулку</h3>
+                <div class="card-meta"><span>📅 Щотижня</span><span>📍 притулок старого лева</span></div>
+                <p> Дуже потрібні люди з, бажано зоологів. Багато тварин прибуло зі сходу. </p>
+                <button class="join-btn">Долучитися</button>
+            </article>
+            <article class="project-card">
+                <h3>Вигул собак з притулку</h3>
+                <div class="card-meta"><span>📅 Щотижня</span><span>📍 притулок старого лева</span></div>
+                <button class="join-btn">Долучитися</button>
+            </article>
+        </div>
+    </section>
+
+    <section id="social" class="grid-section">
+        <div class="section-intro">
+            <h2>Місто</h2>
+            <p>Розвиток міського простору та підтримка людей. Соціальні ініціативи в серці громади.</p>
+        </div>
+        <div class="project-list">
+            <article class="project-card">
+                <h3>Сортування сміття</h3>
+                <div class="card-meta"><span>📅 10.11</span><span>📍 Франківський район</span></div>
+                <p> Суботник, збір біля 34 будинку на В.Великого </p>
+                <button class="join-btn">Долучитися</button>
+            </article>
+            <article class="project-card">
+                <h3>Допомога літнім</h3>
+                <div class="card-meta"><span>📅 Щодня</span><span>📍 Сихівський район</span></div>
+                <p> Допомога старшим людям (прибирання, соціалізація, збір грошей) з сихівського притулку </p>
+                <button class="join-btn">Долучитися</button>
+            </article>
+        </div>
+    </section>
+
+    <section id="my" class="grid-section">
+        <div class="section-intro">
+            <h2>Мої ініціативи</h2>
+            <p>Проєкти, у яких ви вже берете участь.</p>
+        </div>
+        <div class="project-list">
+            <article class="project-card active-project">
+                <h3>Висадка дерев</h3>
+                <div class="card-meta"><span>📅 25.10</span><span>✅ Ви залучені</span></div>
+                <button class="join-btn">Деталі</button>
+            </article>
+        </div>
+    </section>
+</main>
+
 <footer>
-    <h3>Підтримати проєкт</h3>
-    <p>+380934868939</p>
+    <p>Підтримати проєкт: <strong> privat 380934868939</strong> | Разом ми сила</p>
+    <p>Наші контакти: +3802345670987</strong> | м. Львів</p>
 </footer>
+
 </body>
 </html>

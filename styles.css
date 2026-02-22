@@ -1,30 +1,221 @@
+html {
+    scroll-behavior: smooth;
+}
+
 body {
-    font-family: Times New Roman, sans-serif ;
+
     margin: 0;
     padding: 0;
-    background-image: url('background(forest->town).png');
-    background-size: cover;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: white;
+    /* десктоп горизонтальний скрол */
+    overflow-y: hidden;
+    overflow-x: auto;
+    background-color: #000;
 }
 
 main {
     display: flex;
-    width: 210vw;
-    height: 100vh;
+    width: 230vw;
+    height: 100%;
+
+    background-image: url('background(forest->town).png');
+    /*background-color: #987;*/
+    background-size: cover;
+    background-position: left top;
+    background-repeat: no-repeat;
 }
+
+
 
 section {
-    width: 70vw;
+    width: 20%;
+    height: 100vh;
     flex-shrink: 0;
-    padding: 50px;
-    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-top: 3%;
 }
 
-header, footer {
+header {
     position: fixed;
-    width: 100%;
-    z-index: 100;    /* щоб були поверх фону */
-    background: rgba(255, 255, 255, 0.35);
+    top: 0;
+    width: 100vw;
+    z-index: 1000;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(15px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
 }
 
-header { top: 0; }
-footer { bottom: 0; }
+
+
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 40px;
+    height: 70px;
+}
+
+
+
+nav ul {
+    display: flex;
+    list-style: none;
+    gap: 25%;
+}
+
+
+
+nav a {
+    text-decoration: none;
+    color: white;
+    font-weight: bold;
+}
+
+
+
+footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    text-align: center;
+    background: rgba(0, 0, 0, 0.6);
+    padding: 10px 0;
+}
+
+
+
+/* секції */
+
+.grid-section {
+    display: grid;
+    /* ліва  фіксована, права гнучка */
+    grid-template-columns: 320px minmax(300px, 650px);
+    gap: 40px;
+    width: 20%;
+    max-height: 85vh;
+    align-items: start;
+}
+
+
+
+.section-intro {
+    background: rgba(0, 0, 0, 0.4);
+    padding: 25px;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+
+.project-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    /* скрол карток */
+    max-height: 70vh;
+    overflow-y: auto;
+    padding-right: 2%;
+}
+
+
+
+/* скролбар */
+.project-list::-webkit-scrollbar { width: 6px; }
+.project-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
+
+
+
+/* вигляд карток */
+.project-card, .glass-box {
+    background: rgba(150, 150, 150, 0.2);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 15px;
+    padding: 20px;
+
+}
+
+
+
+.card-meta {
+    display: flex;
+    justify-content: space-between;
+    margin: 15px 0;
+    font-size: 0.9rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 10px;
+}
+
+
+
+.join-btn {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+
+
+#nature .join-btn { background: #2d5a27; }
+#animals .join-btn { background: #8b5e34; }
+#social .join-btn, #my .join-btn { background: #2a5a8a; }
+
+.join-btn:hover { filter: brightness(1.2); }
+
+/* малі екрани */
+
+@media (max-width: 1200px) {
+    body {
+        /* прокрутка */
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    main {
+        flex-direction: column;
+        width: 100%;
+        height: auto;
+        background-size: cover;
+        background-attachment: fixed;
+    }
+
+    section {
+        width: 100%;
+        height: auto;
+        min-height: 100vh;
+        padding: 80px 0 40px 0;
+        box-sizing: border-box;
+    }
+
+    .grid-section {
+        /* 1 колонка */
+        grid-template-columns: 1fr;
+        width: 90%;
+        max-width: 500px;
+        margin: 0 auto;
+        max-height: none;
+        gap: 20px;
+    }
+
+    .project-list {
+        max-height: none;
+        overflow: visible;
+        padding-right: 0;
+    }
+
+    .header-container {
+        padding: 0 15px;
+    }
+
+    nav ul {
+        gap: 10px;
+        font-size: 0.85rem;
+    }
+}
