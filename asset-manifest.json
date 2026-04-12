@@ -1,16 +1,15 @@
 {
   "files": {
-    "main.css": "/web-volunteering-/static/css/main.dd94816d.css",
-    "main.js": "/web-volunteering-/static/js/main.b17e9437.js",
+    "main.css": "/web-volunteering-/static/css/main.a5b54d19.css",
+    "main.js": "/web-volunteering-/static/js/main.92303724.js",
     "static/js/453.185072de.chunk.js": "/web-volunteering-/static/js/453.185072de.chunk.js",
-    "static/media/background.png": "/web-volunteering-/static/media/background.cdcd2d7b44766c694633.png",
     "index.html": "/web-volunteering-/index.html",
-    "main.dd94816d.css.map": "/web-volunteering-/static/css/main.dd94816d.css.map",
-    "main.b17e9437.js.map": "/web-volunteering-/static/js/main.b17e9437.js.map",
+    "main.a5b54d19.css.map": "/web-volunteering-/static/css/main.a5b54d19.css.map",
+    "main.92303724.js.map": "/web-volunteering-/static/js/main.92303724.js.map",
     "453.185072de.chunk.js.map": "/web-volunteering-/static/js/453.185072de.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.dd94816d.css",
-    "static/js/main.b17e9437.js"
+    "static/css/main.a5b54d19.css",
+    "static/js/main.92303724.js"
   ]
 }
