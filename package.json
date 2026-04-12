@@ -1,5 +1,5 @@
 {
-  "homepage": "https://username.github.io/volunteer-app",
+  "homepage": "https://ZabolotnaAnastasya.github.io/web-volunteering-",
   "scripts": {
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build",
