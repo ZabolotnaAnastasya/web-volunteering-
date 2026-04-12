@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/web-volunteering-/static/css/main.a5b54d19.css",
-    "main.js": "/web-volunteering-/static/js/main.92303724.js",
+    "main.css": "/web-volunteering-/static/css/main.b3900108.css",
+    "main.js": "/web-volunteering-/static/js/main.1f0c1b66.js",
     "static/js/453.185072de.chunk.js": "/web-volunteering-/static/js/453.185072de.chunk.js",
     "index.html": "/web-volunteering-/index.html",
-    "main.a5b54d19.css.map": "/web-volunteering-/static/css/main.a5b54d19.css.map",
-    "main.92303724.js.map": "/web-volunteering-/static/js/main.92303724.js.map",
+    "main.b3900108.css.map": "/web-volunteering-/static/css/main.b3900108.css.map",
+    "main.1f0c1b66.js.map": "/web-volunteering-/static/js/main.1f0c1b66.js.map",
     "453.185072de.chunk.js.map": "/web-volunteering-/static/js/453.185072de.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.a5b54d19.css",
-    "static/js/main.92303724.js"
+    "static/css/main.b3900108.css",
+    "static/js/main.1f0c1b66.js"
   ]
 }
