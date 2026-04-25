@@ -1,12 +1,42 @@
 import React from 'react';
 import InitiativeCard from '../components/InitiativeCard';
 import InitiativeForm from '../components/InitiativeForm';
+import { db } from '../firebase';
+import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 function Home({ initiatives, setInitiatives, joinedIds, onJoin }) {
-    const addNewInitiative = (newInit) => {
-        const updated = [newInit, ...initiatives];
-        setInitiatives(updated);
-        localStorage.setItem('all_initiatives', JSON.stringify(updated));
+
+    // + гова ініціатива
+    const addNewInitiative = async (newInitData) => {
+        try {
+            const docToSave = {
+                title: newInitData.title,
+                desc: newInitData.desc,
+                needed: Number(newInitData.needed),
+                category: newInitData.category,
+                current: 0,
+                location: newInitData.location,
+                date: newInitData.date
+            };
+
+            // запис в колекцію
+            const docRef = await addDoc(collection(db, "initiatives"), docToSave);
+
+            // локально оновл
+            if (typeof setInitiatives === 'function') {
+                const finalNewInit = {
+                    ...docToSave,
+                    id: docRef.id,
+                    date: new Date().toLocaleDateString('uk-UA')
+                };
+                setInitiatives(prev => [finalNewInit, ...prev]);
+            }
+
+            alert("Ініціативу успішно опубліковано!");
+        } catch (error) {
+            console.error("Помилка запису в БД:", error);
+            alert("Не вдалося зберегти ініціативу в базі даних: " + error.message);
+        }
     };
 
     const categories = [
@@ -41,8 +71,8 @@ function Home({ initiatives, setInitiatives, joinedIds, onJoin }) {
                     </div>
 
                     {initiatives.filter(item => item.category === section.id && item.current < item.needed).length === 0 && (
-                        <p style={{ color: 'white', textAlign: 'center', opacity: 0.6 }}>
-                            Активних запитів у цій категорії немає.
+                        <p style={{ color: 'white', textAlign: 'center', opacity: 0.6, padding: '20px' }}>
+                            Активних запитів у цій категорії поки що немає.
                         </p>
                     )}
                 </section>
