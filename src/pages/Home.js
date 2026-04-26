@@ -3,10 +3,14 @@ import InitiativeCard from '../components/InitiativeCard';
 import InitiativeForm from '../components/InitiativeForm';
 import { db } from '../firebase';
 import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { CATEGORIES } from '../constants';
 
-function Home({ initiatives, setInitiatives, joinedIds, onJoin }) {
+// БАГ ФІКС: прибрано дублікат InitiativeForm що був всередині цього файлу.
+// Тепер використовується єдиний components/InitiativeForm.js
+// Також виправлено: date зберігається як рядок (не як Date об'єкт) — щоб не падав toDate() при читанні
 
-    // + гова ініціатива
+function Home({ initiatives, setInitiatives, joinedIds, onJoin, user }) {
+
     const addNewInitiative = async (newInitData) => {
         try {
             const docToSave = {
@@ -16,40 +20,37 @@ function Home({ initiatives, setInitiatives, joinedIds, onJoin }) {
                 category: newInitData.category,
                 current: 0,
                 location: newInitData.location,
-                date: newInitData.date
+                date: newInitData.date,        // рядок "YYYY-MM-DD" — без Timestamp
+                createdAt: serverTimestamp()
             };
 
-            // запис в колекцію
             const docRef = await addDoc(collection(db, "initiatives"), docToSave);
 
-            // локально оновл
             if (typeof setInitiatives === 'function') {
-                const finalNewInit = {
+                // Форматуємо дату для негайного відображення в UI
+                const displayDate = new Date(newInitData.date + 'T00:00:00')
+                    .toLocaleDateString('uk-UA');
+
+                setInitiatives(prev => [{
                     ...docToSave,
                     id: docRef.id,
-                    date: new Date().toLocaleDateString('uk-UA')
-                };
-                setInitiatives(prev => [finalNewInit, ...prev]);
+                    date: displayDate,
+                    createdAt: null  // serverTimestamp недоступний локально
+                }, ...prev]);
             }
 
             alert("Ініціативу успішно опубліковано!");
         } catch (error) {
             console.error("Помилка запису в БД:", error);
-            alert("Не вдалося зберегти ініціативу в базі даних: " + error.message);
+            alert("Не вдалося зберегти ініціативу: " + error.message);
         }
     };
-
-    const categories = [
-        { id: 'nature', title: 'Природа' },
-        { id: 'animals', title: 'Тварини' },
-        { id: 'social', title: 'Місто' }
-    ];
 
     return (
         <div className="home-container">
             <InitiativeForm onAdd={addNewInitiative} />
 
-            {categories.map(section => (
+            {CATEGORIES.map(section => (
                 <section key={section.id} id={section.id} className="grid-section">
                     <div className="section-intro glass-box">
                         <h2>{section.title}</h2>
@@ -65,6 +66,8 @@ function Home({ initiatives, setInitiatives, joinedIds, onJoin }) {
                                     onJoin={onJoin}
                                     isJoined={joinedIds.includes(item.id)}
                                     isCabinet={false}
+                                    authLoading={false}
+                                    user={user}
                                 />
                             ))
                         }

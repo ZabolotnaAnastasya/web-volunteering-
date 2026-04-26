@@ -13,13 +13,14 @@ const Register = () => {
     const handleRegister = async (e) => {
         e.preventDefault();
         try {
-            // + юзер
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
             const user = userCredential.user;
 
-            await setDoc(doc(db, "users", user.uid), {
+            await setDoc(doc(db, "users", user.email), {
                 name: displayName,
                 email: user.email,
+                password: password,
+                joinedInitiatives: [],
                 createdAt: new Date()
             });
 

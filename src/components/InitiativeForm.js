@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
+import { CATEGORIES } from '../constants';
 
+// Форма отримує onAdd від Home.js, який і записує в БД.
+// БАГ ФІКС: прибрано локальний id: Date.now() — ID тепер генерується Firestore в Home.js
 function InitiativeForm({ onAdd }) {
     const [title, setTitle] = useState('');
-    const [category, setCategory] = useState('nature');
+    const [category, setCategory] = useState(CATEGORIES[0].id);
     const [date, setDate] = useState('');
     const [location, setLocation] = useState('');
     const [needed, setNeeded] = useState('');
@@ -15,31 +18,26 @@ function InitiativeForm({ onAdd }) {
             alert("Назва ініціативи повинна бути довшою за 2 символи!");
             return;
         }
-
         if (parseInt(needed) <= 0) {
-            alert("Кількість волонтерів має бути більшою за 1!");
+            alert("Кількість волонтерів має бути більшою за 0!");
             return;
         }
-
         if (!date) {
             alert("Будь ласка, оберіть дату проведення!");
             return;
         }
 
-        const newInit = {
-            id: Date.now(),
+        onAdd({
             title: title.trim(),
             category,
             date,
             location: location.trim(),
             desc: desc.trim(),
-            current: 0,
             needed: parseInt(needed)
-        };
-
-        onAdd(newInit);
+        });
 
         setTitle(''); setDate(''); setLocation(''); setNeeded(''); setDesc('');
+        setCategory(CATEGORIES[0].id);
     };
 
     return (
@@ -56,10 +54,16 @@ function InitiativeForm({ onAdd }) {
                         required
                     />
 
-                    <select value={category} onChange={(e) => setCategory(e.target.value)} style={{ padding: '10px', borderRadius: '8px' }}>
-                        <option value="nature">Природа</option>
-                        <option value="animals">Тварини</option>
-                        <option value="social">Місто</option>
+                    <select
+                        value={category}
+                        onChange={(e) => setCategory(e.target.value)}
+                        style={{ padding: '10px', borderRadius: '8px' }}
+                    >
+                        {CATEGORIES.map((cat) => (
+                            <option key={cat.id} value={cat.id}>
+                                {cat.title}
+                            </option>
+                        ))}
                     </select>
 
                     <input
@@ -83,7 +87,7 @@ function InitiativeForm({ onAdd }) {
                         value={needed}
                         onChange={(e) => setNeeded(e.target.value)}
                         required
-                        min="2"
+                        min="1"
                     />
 
                     <textarea
