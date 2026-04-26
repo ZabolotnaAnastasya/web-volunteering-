@@ -5,11 +5,7 @@ import { db } from '../firebase';
 import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 import { CATEGORIES } from '../constants';
 
-// БАГ ФІКС: прибрано дублікат InitiativeForm що був всередині цього файлу.
-// Тепер використовується єдиний components/InitiativeForm.js
-// Також виправлено: date зберігається як рядок (не як Date об'єкт) — щоб не падав toDate() при читанні
-
-function Home({ initiatives, setInitiatives, joinedIds, onJoin, user }) {
+function Home({ initiatives, setInitiatives, joinedIds, onJoin, onRate, user }) {
 
     const addNewInitiative = async (newInitData) => {
         try {
@@ -20,14 +16,15 @@ function Home({ initiatives, setInitiatives, joinedIds, onJoin, user }) {
                 category: newInitData.category,
                 current: 0,
                 location: newInitData.location,
-                date: newInitData.date,        // рядок "YYYY-MM-DD" — без Timestamp
+                date: newInitData.date,
+                rating: 0,
+                ratingCount: 0,
                 createdAt: serverTimestamp()
             };
 
             const docRef = await addDoc(collection(db, "initiatives"), docToSave);
 
             if (typeof setInitiatives === 'function') {
-                // Форматуємо дату для негайного відображення в UI
                 const displayDate = new Date(newInitData.date + 'T00:00:00')
                     .toLocaleDateString('uk-UA');
 
@@ -35,7 +32,7 @@ function Home({ initiatives, setInitiatives, joinedIds, onJoin, user }) {
                     ...docToSave,
                     id: docRef.id,
                     date: displayDate,
-                    createdAt: null  // serverTimestamp недоступний локально
+                    createdAt: null
                 }, ...prev]);
             }
 
@@ -64,9 +61,9 @@ function Home({ initiatives, setInitiatives, joinedIds, onJoin, user }) {
                                     key={item.id}
                                     item={item}
                                     onJoin={onJoin}
+                                    onRate={onRate}
                                     isJoined={joinedIds.includes(item.id)}
                                     isCabinet={false}
-                                    authLoading={false}
                                     user={user}
                                 />
                             ))

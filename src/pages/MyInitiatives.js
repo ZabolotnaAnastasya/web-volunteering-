@@ -5,7 +5,7 @@ import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-
 import InitiativeCard from '../components/InitiativeCard';
 import { ALL_CATEGORIES } from '../constants';
 
-function MyInitiatives({ initiatives, joinedIds, onLeave, user, onLogout, authLoading }) {
+function MyInitiatives({ initiatives, joinedIds, onLeave, onRate, user, onLogout, authLoading }) {
     const [userName, setUserName] = useState('');
     const [filterCategory, setFilterCategory] = useState('all');
 
@@ -23,12 +23,10 @@ function MyInitiatives({ initiatives, joinedIds, onLeave, user, onLogout, authLo
         fetchUserData();
     }, [user]);
 
-    // 1. Стан очікування перевірки авторизації
     if (authLoading) {
         return <div style={{ textAlign: 'center', padding: '50px', color: 'white' }}>Завантаження...</div>;
     }
 
-    // 2. Блок для незалогіненого користувача
     if (!user) {
         return (
             <main className="my-initiatives-page" style={{ width: '90%', margin: '0 auto', textAlign: 'center' }}>
@@ -44,7 +42,6 @@ function MyInitiatives({ initiatives, joinedIds, onLeave, user, onLogout, authLo
         );
     }
 
-    // 3. Логіка фільтрації для авторизованого користувача
     const myProjects = initiatives.filter(item =>
         joinedIds.includes(item.id) &&
         (filterCategory === 'all' || item.category === filterCategory)
@@ -69,7 +66,7 @@ function MyInitiatives({ initiatives, joinedIds, onLeave, user, onLogout, authLo
                         {ALL_CATEGORIES.map(cat => (
                             <button
                                 key={cat.id}
-                                className={`filter-btn ${filterCategory === cat.id ? 'active': ''}`}
+                                className={`filter-btn ${filterCategory === cat.id ? 'active' : ''}`}
                                 onClick={() => setFilterCategory(cat.id)}
                             >
                                 {cat.title}
@@ -84,8 +81,10 @@ function MyInitiatives({ initiatives, joinedIds, onLeave, user, onLogout, authLo
                                 key={item.id}
                                 item={item}
                                 onJoin={onLeave}
+                                onRate={onRate}
                                 isJoined={true}
                                 isCabinet={true}
+                                user={user}
                             />
                         ))
                     ) : (

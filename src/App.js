@@ -26,14 +26,12 @@ function App() {
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
             if (currentUser) {
-                // ЛОГІН: завантажуємо масив з БД → кладемо в localStorage
                 try {
                     const userSnap = await getDoc(doc(db, "users", currentUser.email));
                     let ids = [];
                     if (userSnap.exists()) {
                         ids = userSnap.data().joinedInitiatives || [];
                     } else {
-                        // документа немає — створюємо
                         await setDoc(doc(db, "users", currentUser.email), {
                             email: currentUser.email,
                             joinedInitiatives: []
@@ -47,7 +45,6 @@ function App() {
                     setJoinedIds(local);
                 }
             } else {
-                // НЕ ЗАЛОГОВАНИЙ: масив завжди порожній
                 setJoinedIds([]);
             }
             setUser(currentUser);
@@ -56,7 +53,7 @@ function App() {
         return () => unsubscribe();
     }, []);
 
-    // Завантажуємо всі ініціативи з БД
+    // Завантаж ініціативи з БД
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -68,6 +65,8 @@ function App() {
                         ...raw,
                         current: Number(raw.current) || 0,
                         needed: Number(raw.needed) || 0,
+                        rating: Number(raw.rating) || 0,
+                        ratingCount: Number(raw.ratingCount) || 0,
                         date: raw.date?.toDate
                             ? raw.date.toDate().toLocaleDateString('uk-UA')
                             : raw.date
@@ -81,13 +80,12 @@ function App() {
         fetchData();
     }, []);
 
-    // Хелпер: оновити joinedIds і localStorage синхронно
     const updateJoinedLocal = (newIds) => {
         setJoinedIds(newIds);
         localStorage.setItem(LS_KEY, JSON.stringify(newIds));
     };
 
-    // LOGOUT: зберігаємо localStorage → БД, потім чистимо
+    // LOGOUT
     const handleLogout = async () => {
         if (user) {
             try {
@@ -115,22 +113,20 @@ function App() {
         }
         if (joinedIds.includes(id)) return;
 
-        // Одразу оновлюємо UI і localStorage
         const newIds = [...joinedIds, id];
         updateJoinedLocal(newIds);
 
         try {
-            // Оновлюємо лічильник в ініціативі
             await updateDoc(doc(db, "initiatives", id), { current: increment(1) });
-            // Записуємо id в масив joinedInitiatives юзера в БД
-            await updateDoc(doc(db, "users", user.email), { joinedInitiatives: arrayUnion(id) });
+            await updateDoc(doc(db, "users", user.email), {
+                joinedInitiatives: arrayUnion(id)
+            });
             setInitiatives(prev => prev.map(item =>
                 item.id === id ? { ...item, current: (item.current || 0) + 1 } : item
             ));
         } catch (e) {
             console.error("Помилка при долученні:", e);
             alert("Помилка: " + e.message);
-            // відкочуємо локальний стан
             updateJoinedLocal(joinedIds);
         }
     };
@@ -141,10 +137,10 @@ function App() {
         updateJoinedLocal(newIds);
 
         try {
-            // Зменшуємо лічильник в ініціативі
             await updateDoc(doc(db, "initiatives", id), { current: increment(-1) });
-            // Видаляємо id з масиву joinedInitiatives юзера в БД
-            await updateDoc(doc(db, "users", user.email), { joinedInitiatives: arrayUnion(id) });
+            await updateDoc(doc(db, "users", user.email), {
+                joinedInitiatives: arrayRemove(id)
+            });
             setInitiatives(prev => prev.map(item =>
                 item.id === id ? { ...item, current: Math.max(0, (item.current || 1) - 1) } : item
             ));
@@ -152,6 +148,36 @@ function App() {
             console.error("Помилка при скасуванні:", e);
             alert("Помилка: " + e.message);
             updateJoinedLocal(joinedIds);
+        }
+    };
+
+    // Оцінити ініціативу
+    const handleRate = async (id, newMark, currentRating, currentCount) => {
+        const newCount = currentCount + 1;
+        const newRating = parseFloat(
+            ((currentRating * currentCount + newMark) / newCount).toFixed(2)
+        );
+
+        setInitiatives(prev => prev.map(item =>
+            item.id === id
+                ? { ...item, rating: newRating, ratingCount: newCount }
+                : item
+        ));
+
+        try {
+            await updateDoc(doc(db, "initiatives", id), {
+                rating: newRating,
+                ratingCount: newCount
+            });
+        } catch (e) {
+            console.error("Помилка при оцінюванні:", e);
+            alert("Не вдалося зберегти оцінку: " + e.message);
+            // відкочуємо
+            setInitiatives(prev => prev.map(item =>
+                item.id === id
+                    ? { ...item, rating: currentRating, ratingCount: currentCount }
+                    : item
+            ));
         }
     };
 
@@ -167,6 +193,7 @@ function App() {
                                 setInitiatives={setInitiatives}
                                 joinedIds={joinedIds}
                                 onJoin={handleJoin}
+                                onRate={handleRate}
                                 user={user}
                             />
                         } />
@@ -179,6 +206,7 @@ function App() {
                                 setInitiatives={setInitiatives}
                                 joinedIds={joinedIds}
                                 onLeave={handleLeave}
+                                onRate={handleRate}
                                 user={user}
                                 onLogout={handleLogout}
                                 authLoading={authLoading}
@@ -190,6 +218,7 @@ function App() {
                                 setInitiatives={setInitiatives}
                                 joinedIds={joinedIds}
                                 onJoin={handleJoin}
+                                onRate={handleRate}
                                 user={user}
                             />
                         } />

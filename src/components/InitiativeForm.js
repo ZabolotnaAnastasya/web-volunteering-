@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { CATEGORIES } from '../constants';
 
-// Форма отримує onAdd від Home.js, який і записує в БД.
-// БАГ ФІКС: прибрано локальний id: Date.now() — ID тепер генерується Firestore в Home.js
+
 function InitiativeForm({ onAdd }) {
     const [title, setTitle] = useState('');
     const [category, setCategory] = useState(CATEGORIES[0].id);
