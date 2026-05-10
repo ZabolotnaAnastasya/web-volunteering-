@@ -9,7 +9,7 @@ import './App.css';
 import Register from './pages/Register';
 import Auth from './pages/Auth';
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001/api';
+const API_URL = process.env.REACT_APP_API_URL || '/api';
 
 function App() {
     const [user, setUser] = useState(null);
