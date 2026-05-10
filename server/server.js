@@ -20,7 +20,7 @@ app.use(express.json());
 const PORT       = process.env.PORT || 5001;
 const JWT_SECRET = process.env.JWT_SECRET || 'lab5_secret_key';
 
-// ── Middleware JWT ──────────────────────────────────────────────────────────
+
 const authenticate = (req, res, next) => {
     const header = req.headers.authorization;
     if (!header?.startsWith('Bearer ')) {
@@ -32,12 +32,10 @@ const authenticate = (req, res, next) => {
         req.userEmail = decoded.email;
         return next();
     } catch (err) {
-        // Якщо токен не пройшов перевірку (прострочений або "undefined")
         return res.status(401).json({ message: 'Сесія завершена, увійдіть знову' });
     }
 };
 
-// Хелпер — знайти або створити юзера (для Firebase-авторизованих)
 const findOrCreateUser = async (email) => {
     let user = await prisma.user.findUnique({ where: { email } });
     if (!user) {
@@ -48,12 +46,12 @@ const findOrCreateUser = async (email) => {
     return user;
 };
 
-// ── Health-check ────────────────────────────────────────────────────────────
+// Health-check
 app.get('/api/message', (req, res) => {
     res.json({ message: 'Server is running.' });
 });
 
-// ── Реєстрація ──────────────────────────────────────────────────────────────
+// реєстрація
 app.post('/api/auth/register', async (req, res) => {
     try {
         const { name, email, password } = req.body;
@@ -68,7 +66,7 @@ app.post('/api/auth/register', async (req, res) => {
     }
 });
 
-// ── Логін ───────────────────────────────────────────────────────────────────
+// логін
 app.post('/api/auth/login', async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -83,7 +81,7 @@ app.post('/api/auth/login', async (req, res) => {
     }
 });
 
-// ── GET /api/initiatives ─────────────────────────────────────────────────────
+// GET /api/initiatives
 app.get('/api/initiatives', async (req, res) => {
     try {
         const initiatives = await prisma.initiative.findMany({
@@ -98,8 +96,8 @@ app.get('/api/initiatives', async (req, res) => {
                 ...ini,
                 averageRating: average,
                 ratingCount: count,
-                current: ini.joins.length,   // "current" — кількість учасників
-                ratings: undefined,           // не тягнемо масиви на клієнт
+                current: ini.joins.length,
+                ratings: undefined,
                 joins: undefined,
             };
         });
@@ -109,14 +107,13 @@ app.get('/api/initiatives', async (req, res) => {
     }
 });
 
-// ── POST /api/initiatives — створити нову ───────────────────────────────────
+// POST /api/initiatives   нова
 app.post('/api/initiatives', authenticate, async (req, res) => {
     try {
         const { title, desc, needed, category, location, date } = req.body;
         if (!title) {
             return res.status(400).json({ message: 'Назва обов\'язкова' });
         }
-        // firebaseId більше не потрібен, але поле є — генеруємо унікальний slug
         const firebaseId = `local_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
 
         const initiative = await prisma.initiative.create({
@@ -137,7 +134,7 @@ app.post('/api/initiatives', authenticate, async (req, res) => {
     }
 });
 
-// ── POST /api/initiatives/:id/join ───────────────────────────────────────────
+// POST /api/initiatives/:id/join
 app.post('/api/initiatives/:id/join', authenticate, async (req, res) => {
     try {
         const initiativeId = parseInt(req.params.id);
@@ -156,7 +153,7 @@ app.post('/api/initiatives/:id/join', authenticate, async (req, res) => {
     }
 });
 
-// ── DELETE /api/initiatives/:id/join — вийти ─────────────────────────────────
+// DELETE /api/initiatives/:id/join вийти
 app.delete('/api/initiatives/:id/join', authenticate, async (req, res) => {
     try {
         const initiativeId = parseInt(req.params.id);
@@ -173,7 +170,7 @@ app.delete('/api/initiatives/:id/join', authenticate, async (req, res) => {
     }
 });
 
-// ── GET /api/me/joins — ініціативи, до яких долучився юзер ──────────────────
+// GET /api/me/joins  вже долучився юзер
 app.get('/api/me/joins', authenticate, async (req, res) => {
     try {
         const user = await prisma.user.findUnique({
@@ -188,7 +185,7 @@ app.get('/api/me/joins', authenticate, async (req, res) => {
     }
 });
 
-// ── POST /api/initiatives/:firebaseId/ratings ────────────────────────────────
+// POST /api/initiatives/:firebaseId/ratings
 app.post('/api/initiatives/:id/ratings', authenticate, async (req, res) => {
     try {
         const initiativeId = parseInt(req.params.id);
@@ -216,7 +213,7 @@ app.post('/api/initiatives/:id/ratings', authenticate, async (req, res) => {
     }
 });
 
-// ── Глобальний обробник помилок ─────────────────────────────────────────────
+// Глобальний обробник помилок
 app.use((err, req, res, next) => {
     console.error('[ERROR]', err.message);
     res.status(err.status || 500).json({ message: err.message });
@@ -224,10 +221,9 @@ app.use((err, req, res, next) => {
 
 const path = require('path');
 
-// Роздає зібраний фронтенд
+// роздає зібраний фронтенд
 app.use(express.static(path.join(__dirname, '..', 'client', 'build')));
 
-// SPA fallback
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'client', 'build', 'index.html'));
 });

@@ -25,7 +25,7 @@ function Auth({ setUser }) {
             const data = await res.json();
 
             if (res.ok) {
-                setUser(data); // data вже містить { token, email, name }
+                setUser(data);
                 navigate('/');
             } else {
                 setError(data.message || 'Невірний логін або пароль');

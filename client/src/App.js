@@ -14,10 +14,10 @@ const API_URL = process.env.REACT_APP_API_URL || '/api';
 function App() {
     const [user, setUser] = useState(null);
     const [initiatives, setInitiatives] = useState([]);
-    const [joinedIds, setJoinedIds] = useState([]);   // масив id ініціатив (число)
+    const [joinedIds, setJoinedIds] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    // 1. Перевірка токена
+    // Перевірка токена
     useEffect(() => {
         const token = localStorage.getItem('token');
         const email = localStorage.getItem('userEmail');
@@ -27,7 +27,7 @@ function App() {
         setLoading(false);
     }, []);
 
-    // 2. Завантаження ініціатив
+    // Завантаження ініціатив
     useEffect(() => {
         const fetchInitiatives = async () => {
             try {
@@ -42,7 +42,7 @@ function App() {
         fetchInitiatives();
     }, []);
 
-    // 3. Завантаження joinedIds коли є юзер
+    // Завантаження joinedIds коли є юзер
     useEffect(() => {
         if (!user) { setJoinedIds([]); return; }
         const fetchJoins = async () => {
@@ -59,7 +59,7 @@ function App() {
         fetchJoins();
     }, [user]);
 
-    // 4. Логін
+    // Логін
     const handleLogin = (u) => {
         if (!u.token) return; // Захист від запису undefined
         localStorage.setItem('token', u.token);
@@ -67,7 +67,7 @@ function App() {
         setUser({ email: u.email });
     };
 
-    // 5. Вихід
+    // Вихід
     const handleLogout = () => {
         localStorage.removeItem('token');
         localStorage.removeItem('userEmail');
@@ -76,9 +76,7 @@ function App() {
     };
 
 
-    // 6. Долучитися / вийти
-
-
+    // Долучитися / вийти
     const handleJoin = async (initiativeId) => {
         const token = localStorage.getItem('token');
         if (!token) { alert('Тільки авторизовані користувачі можуть долучатися!'); return; }
@@ -108,7 +106,7 @@ function App() {
         }
     };
 
-    // 7. Оцінити
+    // Оцінити
     const handleRate = async (initiativeId, value) => {
         const token = localStorage.getItem('token');
         if (!token) { alert('Тільки авторизовані користувачі можуть оцінювати!'); return; }
@@ -137,7 +135,7 @@ function App() {
         }
     };
 
-    // 8. Додати нову ініціативу
+    // нова ініціатива
     const handleAddInitiative = async (newInitData) => {
         const token = localStorage.getItem('token');
         if (!token || token === 'undefined') {
