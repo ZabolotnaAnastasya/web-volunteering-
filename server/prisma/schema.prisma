@@ -1,0 +1,51 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id       Int      @id @default(autoincrement())
+  name     String?
+  email    String   @unique
+  password String
+  ratings  Rating[]
+  joins    Join[]
+}
+
+model Initiative {
+  id         Int      @id @default(autoincrement())
+  firebaseId String   @unique
+  title      String
+  desc       String   @default("")
+  needed     Int      @default(0)
+  category   String   @default("")
+  location   String   @default("")
+  date       String   @default("")
+  createdAt  DateTime @default(now())
+  ratings    Rating[]
+  joins      Join[]
+}
+
+model Rating {
+  id           Int        @id @default(autoincrement())
+  value        Int
+  user         User       @relation(fields: [userId], references: [id])
+  userId       Int
+  initiative   Initiative @relation(fields: [initiativeId], references: [id])
+  initiativeId Int
+
+  @@unique([userId, initiativeId])
+}
+
+model Join {
+  id           Int        @id @default(autoincrement())
+  user         User       @relation(fields: [userId], references: [id])
+  userId       Int
+  initiative   Initiative @relation(fields: [initiativeId], references: [id])
+  initiativeId Int
+
+  @@unique([userId, initiativeId])
+}

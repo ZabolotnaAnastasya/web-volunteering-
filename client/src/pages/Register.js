@@ -1,46 +1,40 @@
-import React, { useState, useEffect } from 'react';
-import { auth, db } from '../firebase';
-import { createUserWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-import { doc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const Register = () => {
+const API_URL = 'http://localhost:5001/api';
+
+function Register() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [displayName, setDisplayName] = useState('');
-    const [loading, setLoading] = useState(false);
+    const [name, setName] = useState(''); // Змінено з displayName на name
+    const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false); // Додано стан завантаження
     const navigate = useNavigate();
-
-    useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (user) => {
-            if (user) navigate('/my-initiatives');
-        });
-        return () => unsubscribe();
-    }, [navigate]);
 
     const handleRegister = async (e) => {
         e.preventDefault();
+        setError('');
         setLoading(true);
-        try {
-            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-            const user = userCredential.user;
 
-            await setDoc(doc(db, "users", user.email), {
-                name: displayName,
-                email: user.email,
-                joinedInitiatives: [],
-                createdAt: new Date()
+        try {
+            const res = await fetch(`${API_URL}/auth/register`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password, name }),
             });
-            // редирект через useEffect вище
-        } catch (error) {
-            setLoading(false);
-            if (error.code === 'auth/email-already-in-use') {
-                alert("Цей email вже зареєстрований. Спробуйте увійти.");
-            } else if (error.code === 'auth/weak-password') {
-                alert("Пароль надто короткий. Мінімум 6 символів.");
+
+            const data = await res.json();
+
+            if (res.ok) {
+                alert('Реєстрація успішна! Тепер увійдіть.');
+                navigate('/auth');
             } else {
-                alert("Помилка: " + error.message);
+                setError(data.message || 'Помилка реєстрації');
             }
+        } catch (err) {
+            setError('Не вдалося з’єднатися з сервером');
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -59,6 +53,7 @@ const Register = () => {
                 <h2 style={{ textAlign: 'center', marginTop: 0, marginBottom: '7%' }}>
                     Реєстрація
                 </h2>
+                {error && <p style={{ color: '#ff4d4d', textAlign: 'center', marginBottom: '4%' }}>{error}</p>}
                 <form onSubmit={handleRegister} style={{
                     display: 'flex',
                     flexDirection: 'column',
@@ -68,8 +63,8 @@ const Register = () => {
                     <input
                         type="text"
                         placeholder="Ваше ім'я"
-                        value={displayName}
-                        onChange={(e) => setDisplayName(e.target.value)}
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
                         required
                         className="filter-btn"
                         style={{
@@ -78,7 +73,9 @@ const Register = () => {
                             width: '80%',
                             padding: '3% 4%',
                             boxSizing: 'border-box',
-                            marginBottom: '4%'
+                            marginBottom: '4%',
+                            color: 'white',
+                            border: '1px solid rgba(255,255,255,0.2)'
                         }}
                     />
                     <input
@@ -94,7 +91,9 @@ const Register = () => {
                             width: '80%',
                             padding: '3% 4%',
                             boxSizing: 'border-box',
-                            marginBottom: '4%'
+                            marginBottom: '4%',
+                            color: 'white',
+                            border: '1px solid rgba(255,255,255,0.2)'
                         }}
                     />
                     <input
@@ -110,14 +109,21 @@ const Register = () => {
                             width: '80%',
                             padding: '3% 4%',
                             boxSizing: 'border-box',
-                            marginBottom: '5%'
+                            marginBottom: '5%',
+                            color: 'white',
+                            border: '1px solid rgba(255,255,255,0.2)'
                         }}
                     />
                     <button
                         type="submit"
                         className="join-btn"
                         disabled={loading}
-                        style={{ width: '80%', margin: 0 }}
+                        style={{
+                            width: '80%',
+                            margin: 0,
+                            cursor: loading ? 'not-allowed' : 'pointer',
+                            opacity: loading ? 0.7 : 1
+                        }}
                     >
                         {loading ? 'Завантаження...' : 'Зареєструватися'}
                     </button>
@@ -125,6 +131,6 @@ const Register = () => {
             </div>
         </div>
     );
-};
+}
 
 export default Register;

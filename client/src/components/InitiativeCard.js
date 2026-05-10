@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 
 function StarRating({ rating, onRate, userRated, disabled }) {
     const [hovered, setHovered] = useState(0);
-
     return (
         <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '10px' }}>
             {[1, 2, 3, 4, 5].map(star => (
@@ -18,31 +17,62 @@ function StarRating({ rating, onRate, userRated, disabled }) {
                         transition: 'color 0.15s',
                         userSelect: 'none'
                     }}
-                >
-                    ★
-                </span>
+                >★</span>
             ))}
             <span style={{ fontSize: '0.8rem', color: '#ccc', marginLeft: '4px' }}>
-                {rating > 0 ? rating.toFixed(1) : '—'}
+                {rating > 0 ? Number(rating).toFixed(2) : '—'}
             </span>
         </div>
     );
 }
 
 function InitiativeCard({ item, onJoin, isJoined, isCabinet, user, onRate }) {
-    const rating = item.rating || 0;
-    const ratingCount = item.ratingCount || 0;
-    // ? юзер вже оцінив
-    const ratedKey = `rated_${item.id}`;
+    const [localRating, setLocalRating] = useState(item.averageRating || 0);
+    const [localCount,  setLocalCount]  = useState(item.ratingCount   || 0);
+    const [loadingRate, setLoadingRate] = useState(false);
+
+    const ratedKey  = `rated_${item.id}`;
     const userRated = !!localStorage.getItem(ratedKey);
 
     const handleRate = async (star) => {
-        if (!user) {
-            alert("Тільки авторизовані користувачі можуть ставити оцінки!");
+        if (!user || loadingRate) return;
+        setLoadingRate(true);
+
+        // Токен зберігається в localStorage після логіну через наш бекенд
+        const token = localStorage.getItem('token');
+        if (!token) {
+            alert("Увійдіть в акаунт щоб оцінювати.");
+            setLoadingRate(false);
             return;
         }
-        localStorage.setItem(ratedKey, '1');
-        onRate(item.id, star, rating, ratingCount);
+
+        try {
+            const res  = await fetch(`http://localhost:5001/api/initiatives/${item.id}/ratings`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ value: star })
+            });
+            const data = await res.json();
+
+            if (!res.ok) {
+                alert(data.message || 'Помилка збереження оцінки');
+                setLoadingRate(false);
+                return;
+            }
+
+            localStorage.setItem(ratedKey, '1');
+            setLocalRating(data.averageRating);
+            setLocalCount(data.ratingCount);
+            if (onRate) onRate(item.id, data.averageRating, data.ratingCount);
+
+        } catch {
+            alert("Сервер недоступний. Спробуйте пізніше.");
+        }
+
+        setLoadingRate(false);
     };
 
     return (
@@ -55,28 +85,26 @@ function InitiativeCard({ item, onJoin, isJoined, isCabinet, user, onRate }) {
             </div>
             <p>{item.desc}</p>
 
-
-            <div style={{
-                borderTop: '1px solid rgba(255,255,255,0.1)',
-                paddingTop: '10px',
-                marginTop: '10px'
-            }}>
+            <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '10px', marginTop: '10px' }}>
                 <div style={{ fontSize: '0.78rem', color: '#aaa', marginBottom: '2px' }}>
                     {userRated
-                        ? 'Ваша оцінка враховано'
+                        ? 'Вашу оцінку враховано ✓'
                         : user
                             ? 'Оцініть ініціативу:'
-                            : `Рейтинг: ${ratingCount} відгук${ratingCount === 1 ? '' : ratingCount >= 2 && ratingCount <= 4 ? 'и' : 'ів'}`
+                            : 'Рейтинг'
                     }
-                    {ratingCount > 0 && user && !userRated &&
-                        <span style={{ marginLeft: '8px', opacity: 0.6 }}>({ratingCount} відг.)</span>
+                    {localCount > 0 &&
+                        <span style={{ marginLeft: '8px', opacity: 0.6 }}>
+                            ({localCount} {localCount === 1 ? 'відгук' : localCount < 5 ? 'відгуки' : 'відгуків'})
+                        </span>
                     }
+                    {loadingRate && <span style={{ marginLeft: '8px', opacity: 0.6 }}>збереження...</span>}
                 </div>
                 <StarRating
-                    rating={rating}
+                    rating={localRating}
                     onRate={handleRate}
                     userRated={userRated}
-                    disabled={!user}
+                    disabled={!user || loadingRate}
                 />
             </div>
 
